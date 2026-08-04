@@ -50,11 +50,11 @@ if STATIC_DIR.exists():
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
 # Add i18n and jurisdiction data to template globals
-jurisdiction_for_templates = jurisdiction_config.get_jurisdiction()
+jurisdiction_for_templates = jurisdiction_config.get_jurisdiction_proxy()
 templates.env.globals["_"] = get_string
 templates.env.globals["get_languages"] = get_supported_languages
 templates.env.globals["is_rtl"] = is_rtl
-templates.env.globals["jurisdiction"] = jurisdiction_for_templates
+templates.env.globals["jurisdiction"] = jurisdiction_config.get_jurisdiction_proxy()
 templates.env.globals["get_form_deadline"] = jurisdiction_config.get_deadline_days_for
 
 # Register routers
@@ -77,7 +77,7 @@ async def home(
     """
     strings = get_all_strings(lang)
     
-    return templates.TemplateResponse("index.html", {
+    return templates.TemplateResponse(request, "index.html", {
         "request": request,
         "lang": lang,
         "is_rtl": is_rtl(lang),
@@ -144,7 +144,7 @@ async def zoom_helper(
     
     zoom_tips = jurisdiction_config.get_zoom_court().get("tips", [])
     
-    return templates.TemplateResponse("flows/zoom_helper.html", {
+    return templates.TemplateResponse(request, "flows/zoom_helper.html", {
         "request": request,
         "lang": lang,
         "is_rtl": is_rtl(lang),
@@ -164,7 +164,7 @@ async def not_found_handler(request: Request, exc: HTTPException):
     """Custom 404 handler."""
     lang = request.query_params.get("lang", "en")
     
-    return templates.TemplateResponse("error.html", {
+    return templates.TemplateResponse(request, "error.html", {
         "request": request,
         "lang": lang,
         "is_rtl": is_rtl(lang),
@@ -179,7 +179,7 @@ async def server_error_handler(request: Request, exc: Exception):
     """Custom 500 handler."""
     lang = request.query_params.get("lang", "en")
     
-    return templates.TemplateResponse("error.html", {
+    return templates.TemplateResponse(request, "error.html", {
         "request": request,
         "lang": lang,
         "is_rtl": is_rtl(lang),
@@ -198,18 +198,18 @@ async def startup_event():
     """Initialize application on startup."""
     cfg = jurisdiction_config.get_jurisdiction()
     print("=" * 60)
-    print(f"🏠 {cfg.get('display_name', 'Eviction Defense')} System")
+    print(f"{cfg.get('display_name', 'Eviction Defense')} System")
     print("=" * 60)
-    print(f"📁 Base directory: {BASE_DIR}")
-    print(f"🌐 Languages: {', '.join(get_supported_languages())}")
-    print(f"⚖️  Jurisdiction: {cfg.get('county')} County, {cfg.get('name')}")
-    print(f"📄 Templates: {TEMPLATES_DIR}")
-    print(f"📦 Assets: {ASSETS_DIR}")
-    print(f"✅ Forms manifest loaded: {len(jurisdiction_config.get_forms())} forms")
+    print(f"Base directory: {BASE_DIR}")
+    print(f"Languages: {', '.join(get_supported_languages())}")
+    print(f"Jurisdiction: {cfg.get('county')} County, {cfg.get('name')}")
+    print(f"Templates: {TEMPLATES_DIR}")
+    print(f"Assets: {ASSETS_DIR}")
+    print(f"Forms manifest loaded: {len(jurisdiction_config.get_forms())} forms")
     
     print("=" * 60)
-    print("🚀 Server ready at http://localhost:8001")
-    print("📖 API docs at http://localhost:8001/docs")
+    print("Server ready at http://localhost:8001")
+    print("API docs at http://localhost:8001/docs")
     print("=" * 60)
 
 

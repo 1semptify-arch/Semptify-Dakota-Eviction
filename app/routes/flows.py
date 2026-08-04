@@ -38,7 +38,7 @@ TEMPLATES_DIR = BASE_DIR / "templates"
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 templates.env.globals["_"] = get_string
 templates.env.globals["is_rtl"] = is_rtl
-templates.env.globals["jurisdiction"] = jurisdiction_config.get_jurisdiction()
+templates.env.globals["jurisdiction"] = jurisdiction_config.get_jurisdiction_proxy()
 templates.env.globals["get_form_deadline"] = jurisdiction_config.get_deadline_days_for
 
 
@@ -114,7 +114,7 @@ async def answer_flow_start(
         {"id": "nonpayment", "label": get_string("defense_nonpayment", lang)},
     ]
     
-    return templates.TemplateResponse(f"flows/answer_step{step}.html", {
+    return templates.TemplateResponse(request, f"flows/answer_step{step}.html", {
         "request": request,
         "lang": lang,
         "is_rtl": is_rtl(lang),
@@ -173,7 +173,7 @@ async def counterclaim_flow_start(
         {"id": "utilities", "label": get_string("counterclaim_utilities", lang)},
     ]
     
-    return templates.TemplateResponse(f"flows/counterclaim_step{step}.html", {
+    return templates.TemplateResponse(request, f"flows/counterclaim_step{step}.html", {
         "request": request,
         "lang": lang,
         "is_rtl": is_rtl(lang),
@@ -236,7 +236,7 @@ async def motions_menu(request: Request, lang: str = Query("en")):
         },
     ]
     
-    return templates.TemplateResponse("flows/motions_menu.html", {
+    return templates.TemplateResponse(request, "flows/motions_menu.html", {
         "request": request,
         "lang": lang,
         "is_rtl": is_rtl(lang),
@@ -258,7 +258,7 @@ async def motion_form(
     
     strings = get_all_strings(lang)
     
-    return templates.TemplateResponse(f"flows/motion_{motion_type}.html", {
+    return templates.TemplateResponse(request, f"flows/motion_{motion_type}.html", {
         "request": request,
         "lang": lang,
         "is_rtl": is_rtl(lang),
@@ -324,7 +324,7 @@ async def hearing_prep_start(
         "ID and proof of address"
     ]
     
-    return templates.TemplateResponse(f"flows/hearing_step{step}.html", {
+    return templates.TemplateResponse(request, f"flows/hearing_step{step}.html", {
         "request": request,
         "lang": lang,
         "is_rtl": is_rtl(lang),

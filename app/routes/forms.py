@@ -31,7 +31,7 @@ FORMS_CACHE_DIR = ASSETS_DIR / "forms"
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 templates.env.globals["_"] = get_string
 templates.env.globals["is_rtl"] = is_rtl
-templates.env.globals["jurisdiction"] = jurisdiction_config.get_jurisdiction()
+templates.env.globals["jurisdiction"] = jurisdiction_config.get_jurisdiction_proxy()
 templates.env.globals["get_form_deadline"] = jurisdiction_config.get_deadline_days_for
 
 
@@ -66,7 +66,7 @@ async def forms_library(
         name_key = f"name_{lang}" if lang != "en" else "name"
         form["display_name"] = form.get(name_key, form.get("name", "Unknown Form"))
     
-    return templates.TemplateResponse("forms/library.html", {
+    return templates.TemplateResponse(request, "forms/library.html", {
         "request": request,
         "lang": lang,
         "is_rtl": is_rtl(lang),
@@ -196,7 +196,7 @@ async def legal_resources(request: Request, lang: str = Query("en")):
     """
     strings = get_all_strings(lang)
 
-    return templates.TemplateResponse("forms/resources.html", {
+    return templates.TemplateResponse(request, "forms/resources.html", {
         "request": request,
         "lang": lang,
         "is_rtl": is_rtl(lang),

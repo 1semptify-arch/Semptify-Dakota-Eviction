@@ -14,7 +14,7 @@ if __name__ == "__main__":
     import uvicorn
     
     print("=" * 60)
-    print("🏠 Starting Dakota County Eviction Defense Module")
+    print("Starting Eviction Defense Module")
     print("=" * 60)
     
     uvicorn.run(
