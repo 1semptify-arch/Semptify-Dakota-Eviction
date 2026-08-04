@@ -1,9 +1,22 @@
 {
   "version": "1.0.0",
-  "jurisdiction": "Minnesota",
-  "county": "Dakota",
-  "court": "Fourth Judicial District",
   "last_updated": "2024-12-01",
+  "jurisdiction": {
+    "name": "Minnesota",
+    "county": "Dakota",
+    "court": "Fourth Judicial District",
+    "display_name": "Dakota County Eviction Defense",
+    "zoom_court_key": "dakota_county",
+    "court_address": "1560 Highway 55, Hastings, MN 55033",
+    "court_phone": "651-438-4325",
+    "help_legal_aid_phone": "612-728-5767",
+    "subtitles": {
+      "en": "Your complete guide to fighting eviction in Dakota County, Minnesota",
+      "es": "Su guía completa para luchar contra el desalojo en el condado de Dakota, Minnesota",
+      "so": "Hagahaaga dhamaystiran ee la dagaalanka ka-saarista ee Degmada Dakota, Minnesota",
+      "ar": "دليلك الكامل لمحاربة الإخلاء في مقاطعة داكوتا، مينيسوتا"
+    }
+  },
   "forms": [
     {
       "id": "HOU301",

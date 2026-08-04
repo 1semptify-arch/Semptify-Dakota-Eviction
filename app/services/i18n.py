@@ -1,5 +1,5 @@
 """
-Dakota County Eviction Defense - Internationalization Service
+Eviction Defense - Internationalization Service
 Supports: English (EN), Spanish (ES), Somali (SO), Arabic (AR)
 """
 
@@ -97,10 +97,10 @@ STRINGS: Dict[str, Dict[str, str]] = {
     
     # Headings
     "title_main": {
-        "en": "Dakota County Eviction Defense",
-        "es": "Defensa contra Desalojo del Condado de Dakota",
-        "so": "Difaaca Ka-saarista Degmada Dakota",
-        "ar": "الدفاع عن الإخلاء في مقاطعة داكوتا"
+        "en": "{display_name}",
+        "es": "{display_name}",
+        "so": "{display_name}",
+        "ar": "{display_name}"
     },
     "title_answer": {
         "en": "File Your Answer to Eviction",
@@ -335,10 +335,10 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "ar": "إذا لم تتمكن من تحمل رسوم المحكمة، فقد تكون مؤهلاً للإعفاء من الرسوم (IFP)."
     },
     "help_legal_aid": {
-        "en": "Free legal help may be available. Call HomeLine: 612-728-5767",
-        "es": "Puede haber ayuda legal gratuita disponible. Llame a HomeLine: 612-728-5767",
-        "so": "Caawimo sharci oo bilaash ah ayaa la heli karaa. Wac HomeLine: 612-728-5767",
-        "ar": "قد تتوفر مساعدة قانونية مجانية. اتصل بـ HomeLine: 612-728-5767"
+        "en": "Free legal help may be available. Call HomeLine: {phone}",
+        "es": "Puede haber ayuda legal gratuita disponible. Llame a HomeLine: {phone}",
+        "so": "Caawimo sharci oo bilaash ah ayaa la heli karaa. Wac HomeLine: {phone}",
+        "ar": "قد تتوفر مساعدة قانونية مجانية. اتصل بـ HomeLine: {phone}"
     },
     
     # Footer
@@ -378,7 +378,21 @@ def get_string(key: str, lang: str = "en", **kwargs) -> str:
 
 def get_all_strings(lang: str = "en") -> Dict[str, str]:
     """Get all strings for a language (for template injection)."""
-    return {key: get_string(key, lang) for key in STRINGS.keys()}
+    # Lazily load jurisdiction context so i18n can still be imported before config
+    try:
+        from config import jurisdiction as jurisdiction_config
+        cfg = jurisdiction_config.get_jurisdiction()
+        context = {
+            "phone": cfg.get("help_legal_aid_phone", ""),
+            "county": cfg.get("county", ""),
+            "jurisdiction": cfg.get("name", ""),
+            "court": cfg.get("court", ""),
+            "court_phone": cfg.get("court_phone", ""),
+            "display_name": cfg.get("display_name", "Eviction Defense"),
+        }
+    except Exception:
+        context = {}
+    return {key: get_string(key, lang, **context) for key in STRINGS.keys()}
 
 def get_supported_languages() -> list:
     """Return list of supported language codes."""

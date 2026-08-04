@@ -1,5 +1,5 @@
 """
-Dakota County Eviction Defense - Defense Flow Routes
+Eviction Defense - Defense Flow Routes
 Handles Answer, Counterclaim, Motion, and Hearing Prep flows.
 """
 
@@ -18,6 +18,7 @@ from pydantic import BaseModel, Field
 import sys
 sys.path.append(str(Path(__file__).parent.parent))
 from services.i18n import get_string, get_all_strings, get_supported_languages, is_rtl
+from config import jurisdiction as jurisdiction_config
 from services.pdf import (
     generate_answer_pdf,
     generate_counterclaim_pdf,
@@ -37,6 +38,8 @@ TEMPLATES_DIR = BASE_DIR / "templates"
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 templates.env.globals["_"] = get_string
 templates.env.globals["is_rtl"] = is_rtl
+templates.env.globals["jurisdiction"] = jurisdiction_config.get_jurisdiction()
+templates.env.globals["get_form_deadline"] = jurisdiction_config.get_deadline_days_for
 
 
 # ============================================================================
@@ -409,11 +412,7 @@ async def generate_complete_packet(
             })
         
         # Load forms manifest
-        forms_path = BASE_DIR / "assets" / "forms.json"
-        if forms_path.exists():
-            with open(forms_path, "r", encoding="utf-8") as f:
-                forms_data = json.load(f)
-                forms_to_include = forms_data.get("forms", [])
+        forms_to_include = jurisdiction_config.get_forms()
         
         # Create case info
         case_info = body.get("case_info", {
@@ -457,25 +456,31 @@ async def calculate_deadlines(
     """Calculate important deadlines based on served date."""
     try:
         served = datetime.strptime(served_date, "%Y-%m-%d")
-        
+
+        answer_days = jurisdiction_config.get_deadline_days_for("HOU301") or 7
+        motion_days = jurisdiction_config.get_deadline_days_for("HOU302") or 3
+        urgent_threshold = jurisdiction_config.get_deadline_days_for("HOU305") or 3
+
+        answer_due = served + timedelta(days=answer_days)
+
         deadlines = {
-            "answer_deadline": (served + timedelta(days=7)).strftime("%Y-%m-%d"),
-            "answer_deadline_display": (served + timedelta(days=7)).strftime("%B %d, %Y"),
-            "days_to_answer": max(0, (served + timedelta(days=7) - datetime.now()).days),
+            "answer_deadline": answer_due.strftime("%Y-%m-%d"),
+            "answer_deadline_display": answer_due.strftime("%B %d, %Y"),
+            "days_to_answer": max(0, (answer_due - datetime.now()).days),
             "motion_deadline": None,
             "is_urgent": False
         }
-        
+
         # If hearing date provided, calculate motion deadline
         if hearing_date:
             hearing = datetime.strptime(hearing_date, "%Y-%m-%d")
-            motion_deadline = hearing - timedelta(days=3)
+            motion_deadline = hearing - timedelta(days=motion_days)
             deadlines["motion_deadline"] = motion_deadline.strftime("%Y-%m-%d")
             deadlines["motion_deadline_display"] = motion_deadline.strftime("%B %d, %Y")
             deadlines["days_to_hearing"] = max(0, (hearing - datetime.now()).days)
-        
-        # Check if urgent (less than 3 days to answer)
-        if deadlines["days_to_answer"] <= 3:
+
+        # Check if urgent (less than the continuance deadline days to answer)
+        if deadlines["days_to_answer"] <= urgent_threshold:
             deadlines["is_urgent"] = True
         
         return JSONResponse(content=deadlines)

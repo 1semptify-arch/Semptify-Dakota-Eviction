@@ -32,14 +32,15 @@
 <div class="alert alert-warning mt-4">
     <div class="alert-icon">📋</div>
     <div>
+{% set counterclaim_days = get_form_deadline('HOU303') %}
         {% if lang == 'en' %}
-        <strong>File your Counterclaim with your Answer</strong> - Both must be filed within 7 days of service.
+        <strong>File your Counterclaim with your Answer</strong> - Both must be filed within {{ counterclaim_days }} days of service.
         {% elif lang == 'es' %}
-        <strong>Presente su Contrademanda con su Respuesta</strong> - Ambos deben presentarse dentro de 7 días.
+        <strong>Presente su Contrademanda con su Respuesta</strong> - Ambos deben presentarse dentro de {{ counterclaim_days }} días.
         {% elif lang == 'so' %}
-        <strong>Xaree Dacwadaada Lid ah Jawaabta</strong> - Labadaba waa in la xareeyaa 7 maalmood gudahood.
+        <strong>Xaree Dacwadaada Lid ah Jawaabta</strong> - Labadaba waa in la xareeyaa {{ counterclaim_days }} maalmood gudahood.
         {% else %}
-        <strong>قدم دعواك المضادة مع ردك</strong> - يجب تقديم كليهما خلال 7 أيام.
+        <strong>قدم دعواك المضادة مع ردك</strong> - يجب تقديم كليهما خلال {{ counterclaim_days }} أيام.
         {% endif %}
     </div>
 </div>

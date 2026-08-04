@@ -42,7 +42,7 @@
     </h3>
     <ul style="margin-left: 1.5rem; color: #92400e;">
         <li>{% if lang == 'en' %}Motion to Dismiss: File as soon as possible{% elif lang == 'es' %}Moción para Desestimar: Presente lo antes posible{% elif lang == 'so' %}Codsiga Joojinta: Xaree sida ugu dhakhsaha badan{% else %}طلب الرفض: قدمه في أقرب وقت ممكن{% endif %}</li>
-        <li>{% if lang == 'en' %}Continuance: File at least 3 days before hearing{% elif lang == 'es' %}Aplazamiento: Presente al menos 3 días antes{% elif lang == 'so' %}Dib u Dhigid: Xaree ugu yaraan 3 maalmood ka hor dhageysiga{% else %}التأجيل: قدمه قبل 3 أيام على الأقل{% endif %}</li>
+        <li>{% set continuance_days = get_form_deadline('HOU305') %}{% if lang == 'en' %}Continuance: File at least {{ continuance_days }} days before hearing{% elif lang == 'es' %}Aplazamiento: Presente al menos {{ continuance_days }} días antes{% elif lang == 'so' %}Dib u Dhigid: Xaree ugu yaraan {{ continuance_days }} maalmood ka hor dhageysiga{% else %}التأجيل: قدمه قبل {{ continuance_days }} أيام على الأقل{% endif %}</li>
         <li>{% if lang == 'en' %}Stay of Writ: File immediately after adverse judgment{% elif lang == 'es' %}Suspensión de Orden: Presente inmediatamente después del fallo{% elif lang == 'so' %}Hakinta Amarka: Xaree isla markiiba ka dib go'aanka ka dhan ah{% else %}وقف الأمر: قدمه فورًا بعد الحكم السلبي{% endif %}</li>
         <li>{% if lang == 'en' %}Fee Waiver: File first, before any other documents{% elif lang == 'es' %}Exención de Tarifas: Presente primero{% elif lang == 'so' %}Cafinta Kharashka: Xaree marka hore{% else %}الإعفاء من الرسوم: قدمه أولاً{% endif %}</li>
     </ul>

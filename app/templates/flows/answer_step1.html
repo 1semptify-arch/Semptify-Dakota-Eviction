@@ -29,9 +29,10 @@
     <div class="alert alert-warning">
         <div class="alert-icon">⏰</div>
         <div>
-            <strong>{{ strings.deadline_warning|replace('{days}', '7') }}</strong>
+            <strong>{{ strings.deadline_warning|replace('{days}', answer_days|string) }}</strong>
             <p style="font-size: 0.9rem; margin-top: 0.25rem;">
-                {% if lang == 'en' %}You must file your Answer within 7 days of being served with the eviction complaint.{% elif lang == 'es' %}Debe presentar su Respuesta dentro de 7 días de recibir la demanda de desalojo.{% elif lang == 'so' %}Waa inaad xareysaa Jawaabta 7 maalmood gudahood ka dib markii laguu soo gaarsiiyo dacwadda ka-saarista.{% else %}يجب تقديم ردك خلال 7 أيام من تبليغك بشكوى الإخلاء.{% endif %}
+{% set answer_days = get_form_deadline('HOU301') %}
+                {% if lang == 'en' %}You must file your Answer within {{ answer_days }} days of being served with the eviction complaint.{% elif lang == 'es' %}Debe presentar su Respuesta dentro de {{ answer_days }} días de recibir la demanda de desalojo.{% elif lang == 'so' %}Waa inaad xareysaa Jawaabta {{ answer_days }} maalmood gudahood ka dib markii laguu soo gaarsiiyo dacwadda ka-saarista.{% else %}يجب تقديم ردك خلال {{ answer_days }} أيام من تبليغك بشكوى الإخلاء.{% endif %}
             </p>
         </div>
     </div>

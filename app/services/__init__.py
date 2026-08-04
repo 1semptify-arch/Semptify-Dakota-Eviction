@@ -1,1 +1,1 @@
-"""Dakota County Eviction Defense - Services Package"""
+"""Eviction Defense - Services Package"""

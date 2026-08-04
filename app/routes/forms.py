@@ -1,9 +1,8 @@
 """
-Dakota County Eviction Defense - Court Forms Routes
+Eviction Defense - Court Forms Routes
 Handles official court forms library and downloads.
 """
 
-import json
 import httpx
 from pathlib import Path
 from typing import Optional
@@ -16,6 +15,7 @@ from fastapi.templating import Jinja2Templates
 import sys
 sys.path.append(str(Path(__file__).parent.parent))
 from services.i18n import get_string, get_all_strings, get_supported_languages, is_rtl
+from config import jurisdiction as jurisdiction_config
 
 # ============================================================================
 # Router Setup
@@ -31,6 +31,8 @@ FORMS_CACHE_DIR = ASSETS_DIR / "forms"
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 templates.env.globals["_"] = get_string
 templates.env.globals["is_rtl"] = is_rtl
+templates.env.globals["jurisdiction"] = jurisdiction_config.get_jurisdiction()
+templates.env.globals["get_form_deadline"] = jurisdiction_config.get_deadline_days_for
 
 
 # ============================================================================
@@ -44,27 +46,20 @@ async def forms_library(
     category: Optional[str] = Query(None, description="Filter by category")
 ):
     """
-    Court Forms Library - Browse and download official MN court forms.
+    Court Forms Library - Browse and download official court forms for the active jurisdiction.
     """
     strings = get_all_strings(lang)
-    
-    # Load forms manifest
-    forms_path = ASSETS_DIR / "forms.json"
-    forms = []
-    resources = []
-    
-    if forms_path.exists():
-        with open(forms_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-            forms = data.get("forms", [])
-            resources = data.get("resources", [])
-    
+
+    forms = jurisdiction_config.get_forms()
+    resources = jurisdiction_config.get_resources()
+
     # Filter by category if specified
     if category:
         forms = [f for f in forms if f.get("category") == category]
-    
+
     # Get unique categories
-    categories = list(set(f.get("category", "other") for f in data.get("forms", [])))
+    all_forms = jurisdiction_config.get_forms()
+    categories = list(set(f.get("category", "other") for f in all_forms))
     
     # Localize form names
     for form in forms:
@@ -90,15 +85,7 @@ async def list_all_forms(
     category: Optional[str] = Query(None)
 ):
     """API: List all available court forms."""
-    forms_path = ASSETS_DIR / "forms.json"
-    
-    if not forms_path.exists():
-        return JSONResponse(content={"forms": [], "error": "Forms manifest not found"})
-    
-    with open(forms_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-    
-    forms = data.get("forms", [])
+    forms = jurisdiction_config.get_forms()
     
     # Filter by category
     if category:
@@ -119,16 +106,7 @@ async def list_all_forms(
 @router.get("/api/form/{form_id}")
 async def get_form_details(form_id: str, lang: str = Query("en")):
     """API: Get details for a specific form."""
-    forms_path = ASSETS_DIR / "forms.json"
-    
-    if not forms_path.exists():
-        raise HTTPException(status_code=500, detail="Forms manifest not found")
-    
-    with open(forms_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-    
-    forms = data.get("forms", [])
-    form = next((f for f in forms if f.get("id") == form_id), None)
+    form = jurisdiction_config.get_form_by_id(form_id)
     
     if not form:
         raise HTTPException(status_code=404, detail=f"Form {form_id} not found")
@@ -144,18 +122,9 @@ async def get_form_details(form_id: str, lang: str = Query("en")):
 async def download_form(form_id: str):
     """
     Redirect to official court form download.
-    We don't host court forms directly - redirect to mncourts.gov.
+    We don't host court forms directly - redirect to the official source.
     """
-    forms_path = ASSETS_DIR / "forms.json"
-    
-    if not forms_path.exists():
-        raise HTTPException(status_code=500, detail="Forms manifest not found")
-    
-    with open(forms_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-    
-    forms = data.get("forms", [])
-    form = next((f for f in forms if f.get("id") == form_id), None)
+    form = jurisdiction_config.get_form_by_id(form_id)
     
     if not form:
         raise HTTPException(status_code=404, detail=f"Form {form_id} not found")
@@ -175,16 +144,7 @@ async def proxy_form_download(form_id: str):
     Proxy download of court form (for offline/caching use).
     Fetches from official source and returns to client.
     """
-    forms_path = ASSETS_DIR / "forms.json"
-    
-    if not forms_path.exists():
-        raise HTTPException(status_code=500, detail="Forms manifest not found")
-    
-    with open(forms_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-    
-    forms = data.get("forms", [])
-    form = next((f for f in forms if f.get("id") == form_id), None)
+    form = jurisdiction_config.get_form_by_id(form_id)
     
     if not form:
         raise HTTPException(status_code=404, detail=f"Form {form_id} not found")
@@ -235,22 +195,13 @@ async def legal_resources(request: Request, lang: str = Query("en")):
     Legal Aid Resources - Contact information and helpful links.
     """
     strings = get_all_strings(lang)
-    
-    # Load resources from forms.json
-    forms_path = ASSETS_DIR / "forms.json"
-    resources = []
-    
-    if forms_path.exists():
-        with open(forms_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-            resources = data.get("resources", [])
-    
+
     return templates.TemplateResponse("forms/resources.html", {
         "request": request,
         "lang": lang,
         "is_rtl": is_rtl(lang),
         "strings": strings,
-        "resources": resources,
+        "resources": jurisdiction_config.get_resources(),
         "languages": get_supported_languages()
     })
 
@@ -258,17 +209,10 @@ async def legal_resources(request: Request, lang: str = Query("en")):
 @router.get("/api/resources")
 async def list_resources():
     """API: List all legal aid resources."""
-    forms_path = ASSETS_DIR / "forms.json"
-    
-    if not forms_path.exists():
-        return JSONResponse(content={"resources": []})
-    
-    with open(forms_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-    
     return JSONResponse(content={
-        "resources": data.get("resources", []),
-        "zoom_court": data.get("zoom_court", {})
+        "resources": jurisdiction_config.get_resources(),
+        "zoom_court": jurisdiction_config.get_zoom_court(),
+        "jurisdiction": jurisdiction_config.get_jurisdiction()
     })
 
 

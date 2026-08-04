@@ -47,7 +47,7 @@
         </li>
         <li>
             <strong>{% if lang == 'en' %}File with Court{% elif lang == 'es' %}Presente en el Tribunal{% elif lang == 'so' %}Xaree Maxkamadda{% else %}قدم للمحكمة{% endif %}</strong>
-            - {% if lang == 'en' %}Dakota County Judicial Center{% elif lang == 'es' %}Centro Judicial del Condado de Dakota{% elif lang == 'so' %}Xarunta Garsoorka Degmada Dakota{% else %}مركز داكوتا القضائي{% endif %}
+            - {{ jurisdiction.court }}
         </li>
         <li>
             <strong>{% if lang == 'en' %}Serve landlord{% elif lang == 'es' %}Notifique al arrendador{% elif lang == 'so' %}U adeeg mulkiilaha{% else %}بلّغ المالك{% endif %}</strong>
@@ -84,9 +84,9 @@
 <div class="alert alert-success">
     <div class="alert-icon">📞</div>
     <div>
-        <strong>Dakota County Court Administration</strong><br>
-        {% if lang == 'en' %}Phone{% elif lang == 'es' %}Teléfono{% elif lang == 'so' %}Telefoon{% else %}هاتف{% endif %}: <a href="tel:651-438-4325">651-438-4325</a><br>
-        {% if lang == 'en' %}Address{% elif lang == 'es' %}Dirección{% elif lang == 'so' %}Cinwaan{% else %}عنوان{% endif %}: 1560 Highway 55, Hastings, MN 55033
+        <strong>{{ jurisdiction.county }} County Court Administration</strong><br>
+        {% if lang == 'en' %}Phone{% elif lang == 'es' %}Teléfono{% elif lang == 'so' %}Telefoon{% else %}هاتف{% endif %}: <a href="tel:{{ jurisdiction.court_phone }}">{{ jurisdiction.court_phone }}</a><br>
+        {% if lang == 'en' %}Address{% elif lang == 'es' %}Dirección{% elif lang == 'so' %}Cinwaan{% else %}عنوان{% endif %}: {{ jurisdiction.court_address }}
     </div>
 </div>
 {% endblock %}

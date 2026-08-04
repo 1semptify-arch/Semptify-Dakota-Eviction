@@ -9,7 +9,7 @@
         <div>
             <h1 class="card-title">{{ strings.nav_forms }}</h1>
             <p class="card-description">
-                {% if lang == 'en' %}Official Minnesota court forms for eviction defense{% elif lang == 'es' %}Formularios oficiales de Minnesota para defensa contra desalojo{% elif lang == 'so' %}Foomamka rasmiga ah ee Minnesota ee difaaca ka-saarista{% else %}نماذج محكمة مينيسوتا الرسمية للدفاع عن الإخلاء{% endif %}
+                {% if lang == 'en' %}Official {{ jurisdiction.name }} court forms for eviction defense{% elif lang == 'es' %}Formularios oficiales de {{ jurisdiction.name }} para defensa contra desalojo{% elif lang == 'so' %}Foomamka rasmiga ah ee {{ jurisdiction.name }} ee difaaca ka-saarista{% else %}نماذج محكمة {{ jurisdiction.name }} الرسمية للدفاع عن الإخلاء{% endif %}
             </p>
         </div>
     </div>

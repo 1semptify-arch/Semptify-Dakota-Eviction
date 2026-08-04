@@ -1,1 +1,1 @@
-"""Dakota County Eviction Defense - Routes Package"""
+"""Eviction Defense - Routes Package"""

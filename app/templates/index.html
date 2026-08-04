@@ -6,15 +6,7 @@
 <div class="text-center mb-2">
     <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">{{ strings.title_main }}</h1>
     <p style="font-size: 1.1rem; color: var(--text-light);">
-        {% if lang == 'en' %}
-        Your complete guide to fighting eviction in Dakota County, Minnesota
-        {% elif lang == 'es' %}
-        Su guía completa para luchar contra el desalojo en el condado de Dakota, Minnesota
-        {% elif lang == 'so' %}
-        Hagahaaga dhamaystiran ee la dagaalanka ka-saarista ee Degmada Dakota, Minnesota
-        {% else %}
-        دليلك الكامل لمحاربة الإخلاء في مقاطعة داكوتا، مينيسوتا
-        {% endif %}
+        {{ jurisdiction.subtitles.get(lang, jurisdiction.subtitles.en) }}
     </p>
 </div>
 
@@ -160,13 +152,13 @@
         </div>
         <p class="card-description">
             {% if lang == 'en' %}
-            Download official Minnesota court forms. Answer forms, motions, fee waivers, and more.
+            Download official {{ jurisdiction.name }} court forms. Answer forms, motions, fee waivers, and more.
             {% elif lang == 'es' %}
-            Descargue formularios oficiales del tribunal de Minnesota. Formularios de respuesta, mociones y más.
+            Descargue formularios oficiales del tribunal de {{ jurisdiction.name }}. Formularios de respuesta, mociones y más.
             {% elif lang == 'so' %}
-            Soo deji foomamka rasmiga ah ee maxkamadda Minnesota. Foomamka jawaabta, codsiyada, iwm.
+            Soo deji foomamka rasmiga ah ee maxkamadda {{ jurisdiction.name }}. Foomamka jawaabta, codsiyada, iwm.
             {% else %}
-            تحميل نماذج محكمة مينيسوتا الرسمية. نماذج الرد، الطلبات، والمزيد.
+            تحميل نماذج محكمة {{ jurisdiction.name }} الرسمية. نماذج الرد، الطلبات، والمزيد.
             {% endif %}
         </p>
         <div class="mt-2">
@@ -212,13 +204,13 @@
         </strong>
         <p>
             {% if lang == 'en' %}
-            Call HomeLine Tenant Hotline: <strong>612-728-5767</strong> (Free legal advice for Minnesota tenants)
+            Call HomeLine Tenant Hotline: <strong>{{ jurisdiction.help_legal_aid_phone }}</strong> (Free legal advice for {{ jurisdiction.name }} tenants)
             {% elif lang == 'es' %}
-            Llame a HomeLine: <strong>612-728-5767</strong> (Asesoramiento legal gratuito para inquilinos de Minnesota)
+            Llame a HomeLine: <strong>{{ jurisdiction.help_legal_aid_phone }}</strong> (Asesoramiento legal gratuito para inquilinos de {{ jurisdiction.name }})
             {% elif lang == 'so' %}
-            Wac HomeLine: <strong>612-728-5767</strong> (Talo sharci oo bilaash ah oo loogu talagalay kireystayaasha Minnesota)
+            Wac HomeLine: <strong>{{ jurisdiction.help_legal_aid_phone }}</strong> (Talo sharci oo bilaash ah oo loogu talagalay kireystayaasha {{ jurisdiction.name }})
             {% else %}
-            اتصل بـ HomeLine: <strong>612-728-5767</strong> (استشارة قانونية مجانية للمستأجرين في مينيسوتا)
+            اتصل بـ HomeLine: <strong>{{ jurisdiction.help_legal_aid_phone }}</strong> (استشارة قانونية مجانية للمستأجرين في {{ jurisdiction.name }})
             {% endif %}
         </p>
     </div>
@@ -238,7 +230,7 @@ function calculateDeadline() {
     
     const served = new Date(input.value);
     const deadline = new Date(served);
-    deadline.setDate(deadline.getDate() + 7);
+    deadline.setDate(deadline.getDate() + {{ get_form_deadline('HOU301') }});
     
     const today = new Date();
     today.setHours(0, 0, 0, 0);
