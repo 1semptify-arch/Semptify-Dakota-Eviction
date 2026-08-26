@@ -18,7 +18,7 @@
 
 ```powershell
 # Navigate to module directory
-cd E:\master-repo\sources\app-dakota-eviction
+cd C:\master-repo\sources\app-dakota-eviction
 
 # Install dependencies
 pip install -r requirements.txt
