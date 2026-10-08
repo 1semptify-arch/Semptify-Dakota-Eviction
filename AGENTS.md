@@ -21,4 +21,4 @@ English, Spanish, Somali, Arabic.
 pip install -r requirements.txt
 python run.py
 ```
-Server starts at `http://localhost:8001`.
+Server starts at `http://localhost:8011` (PORTS.md).
