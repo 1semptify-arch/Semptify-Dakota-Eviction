@@ -18,7 +18,7 @@
 
 ```powershell
 # Navigate to module directory
-cd E:\master-repo\sources\app-dakota-eviction
+cd C:\master-repo\sources\app-dakota-eviction
 
 # Install dependencies
 pip install -r requirements.txt
@@ -27,9 +27,9 @@ pip install -r requirements.txt
 python run.py
 ```
 
-Server starts at: http://localhost:8001
+Server starts at: http://localhost:8011
 
-API docs at: http://localhost:8001/docs
+API docs at: http://localhost:8011/docs
 
 ## Directory Structure
 

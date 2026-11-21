@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 Dakota County Eviction Defense Module - Run Script
-Starts the FastAPI server on port 8001 (separate from main Semptify on 8000)
+Starts the FastAPI server on port 8011 (separate from main Semptify on 8000)
 """
 
 import os
@@ -20,7 +20,7 @@ if __name__ == "__main__":
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
-        port=8001,
+        port=8011,
         reload=True,
         reload_dirs=["app"],
         log_level="info"
